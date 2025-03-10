@@ -36,6 +36,13 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
     setConnection(null);
   };
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!connection) {
+      handleConnect();
+    }
+  };
+
   return (
     <Navbar bg="primary" variant="dark" fixed="top">
       <Container fluid>
@@ -44,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
           Service Insight
         </Navbar.Brand>
         <Nav className="ml-auto">
-          <Form className="d-inline">
+          <Form className="d-inline" onSubmit={handleSubmit}>
             <InputGroup>
               <FormControl
                 ref={search}
@@ -56,7 +63,7 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
                 disabled={!!connection}
                 isInvalid={!!error}
               />
-              <Button variant="outline-light" onClick={handleConnect} hidden={!!connection}>
+              <Button variant="outline-light" type="submit" hidden={!!connection}>
                 <PiPlugsFill />
               </Button>
               <Button variant="outline-light" onClick={handleDisconnect} hidden={!connection}>
