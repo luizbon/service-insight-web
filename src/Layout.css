@@ -1,0 +1,59 @@
+/* Layout.css */
+
+.floating-btn {
+  position: relative;
+  z-index: 1000;
+  border-radius: 50%;
+  width: 40px; /* Set a fixed width for the button */
+  height: 40px; /* Set a fixed height for the button */
+  transition: left 0.3s ease;
+  background-color: transparent; /* Make the button transparent */
+  border: none; /* Remove border */
+}
+
+.floating-btn:hover {
+  background-color: transparent; /* Remove hover color */
+}
+
+.floating-btn:active {
+  background-color: transparent !important;/* Remove active color */
+  border: none;
+  box-shadow: none;
+}
+
+.floating-btn:focus-visible {
+  background-color: transparent; /* Remove active color */
+  border: none;
+  box-shadow: none;
+}
+
+.no-padding {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.vertical-floating-tab {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  z-index: 1050;
+  transition: left 0.3s ease; /* Add transition for smooth animation */
+}
+
+.tab-left {
+  left: -35px;
+  top: 50%;
+  border-top-right-radius: 20%;
+  border-bottom-right-radius: 20%;
+  transition: left 0.3s ease; /* Add transition for smooth animation */
+}
+
+.tab-left:hover {
+  left: 0;
+}
