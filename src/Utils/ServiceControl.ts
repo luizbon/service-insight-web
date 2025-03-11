@@ -1,3 +1,5 @@
+import Endpoint from "../Sdk/Endpoint";
+
 class ServiceControl {
   #baseUrl: string;
   #conversationEndpoint: string;
@@ -22,13 +24,23 @@ class ServiceControl {
     this.#defaultPageSize = 10;
   }
 
-  async getEndpoints() {
+  async getEndpoints(monitoredOnly: boolean = true): Promise<Endpoint[]> {
     const url = this.#concatPath(this.#defaultEndpointsEndpoint);
     const response = await fetch(url);
     const data = await response.json();
-    return data.filter((endpoint: any, index: number, self: any[]) =>
-      index === self.findIndex((e) => e.name === endpoint.name)
-    );
+    
+    const groupedEndpoints = data.reduce((acc: { [key: string]: Endpoint[] }, endpoint: Endpoint) => {
+      if(monitoredOnly && !endpoint.monitored) {
+        return acc;
+      }
+      if (!acc[endpoint.name]) {
+        acc[endpoint.name] = [];
+      }
+      acc[endpoint.name].push(endpoint);
+      return acc;
+    }, {});
+    
+    return groupedEndpoints;
   }
 
   async getMessageData(message: any) {

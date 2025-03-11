@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import ListGroup from 'react-bootstrap/ListGroup';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import { RichTreeView } from '@mui/x-tree-view';
 import ServiceControl from '../Utils/ServiceControl'; // Import ServiceControl from Utils folder
-import TypeHumanizer from '../Utils/TypeHumanizer';
 import Endpoint from '../Sdk/Endpoint';
 
 interface EndpointsProps {
@@ -11,9 +8,16 @@ interface EndpointsProps {
     setEndpoint: (endpoint: Endpoint | undefined) => void;
 }
 
+interface TreeNode {
+    id: string;
+    label: string;
+    children: TreeNode[];
+}
+
 const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
-    const [endpoints, setEndpoints] = useState<Endpoint[]>([]);
-    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const [endpoints, setEndpoints] = useState<any>({});
+    const [activeId, setActiveId] = useState<string | undefined>(undefined);
+    const [nodes, setNodes] = useState<TreeNode[]>([]);
 
     useEffect(() => {
         if (connection) {
@@ -26,35 +30,51 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
 
     useEffect(() => {
         if (!connection) return;
-        if (activeIndex == null) {
-            setEndpoint(undefined);
-        } else {
-            const endpoint = endpoints[activeIndex];
-            setEndpoint(endpoint);
+        for(const key in endpoints) {
+            const endpointGroup = endpoints[key];
+            for(const endpoint of endpointGroup) {
+                if(endpoint.id === activeId) {
+                    setEndpoint(endpoint);
+                    return;
+                } else if(endpoint.name === activeId) {
+                    setEndpoint(endpoint);
+                    return;
+                }
+            }
         }
-    }, [activeIndex]);
+    }, [activeId]);
+
+    useEffect(() => {
+        if (!connection){
+            setNodes([]);
+            return;
+        }
+        const nodes: TreeNode[] = [];
+        const root: TreeNode = { id: connection.service_control, label: connection.service_control, children: [] };
+        nodes.push(root);
+        
+        for (const key in endpoints) {
+            const endpointGroup = endpoints[key];
+            if(endpointGroup.length > 1) {
+                const endpointNode: TreeNode = { id: endpointGroup[0].name, label: endpointGroup[0].name, children: [] };
+                endpointGroup.forEach((endpoint: any) => {
+                    endpointNode.children.push({ id: endpoint.id, label: endpoint.host_display_name, children: [] });
+                });
+                root.children.push(endpointNode);
+            } else {
+                const endpoint = endpointGroup[0];
+                const endpointNode: TreeNode = { id: endpoint.id, label: endpoint.name, children: [] };
+                root.children.push(endpointNode);
+            }
+        }
+        setNodes(nodes);
+    }, [connection, endpoints]);
 
     return (
         <>
             {connection &&
-                <ListGroup>
-                    <ListGroup.Item action active={activeIndex == null} onClick={() => setActiveIndex(null)}>{connection.service_control}</ListGroup.Item>
-                    {endpoints.map((endpoint, index) => (
-                        <OverlayTrigger
-                            key={index}
-                            placement="top"
-                            overlay={<Tooltip>{endpoint.name}</Tooltip>}
-                        >
-                            <ListGroup.Item
-                                action
-                                active={index === activeIndex}
-                                onClick={() => setActiveIndex(index)}
-                            >
-                                <div className="ms-3 text-wrap text-break">{TypeHumanizer.toName(endpoint.name)}</div>
-                            </ListGroup.Item>
-                        </OverlayTrigger>
-                    ))}
-                </ListGroup>
+                <RichTreeView items={nodes} onItemClick={(_event, itemId) => setActiveId(itemId)} expansionTrigger="iconContainer"
+                defaultExpandedItems={[connection.service_control]} itemChildrenIndentation={5} />
             }
         </>
     );
