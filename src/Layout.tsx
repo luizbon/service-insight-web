@@ -22,21 +22,21 @@ const Layout: React.FC<LayoutProps> = ({ children, setEndpoint, connection, setC
       <Container fluid as="main">
         {!isEndpointShown &&
         <div className="vertical-floating-tab tab-left" onClick={() => setIsEndpointShown(!isEndpointShown)}>
-          <span>Endpoint</span>
+          <span>Endpoint Explorer</span>
         </div>
         }
         <Row>
-          <Col xs={isEndpointShown ? 2 : 0} className="no-overflow">
+          <Col xs={isEndpointShown ? 3 : 0} className="no-overflow">
             <PinOffcanvas show={isEndpointShown} placement="start" startPinned={true} onHide={() => setIsEndpointShown(false)}>
               <PinOffcanvas.Title>
-                <h2>Endpoints</h2>
+                <h2>Endpoint Explorer</h2>
               </PinOffcanvas.Title>
               <PinOffcanvas.Body>
                 <Endpoints connection={connection} setEndpoint={setEndpoint} />
               </PinOffcanvas.Body>
             </PinOffcanvas>
           </Col>
-          <Col xs={isEndpointShown ? 10 : 12} className="no-overflow">
+          <Col xs={isEndpointShown ? 9 : 12} className="no-overflow">
             {children}
           </Col>
         </Row>
