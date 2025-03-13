@@ -1,3 +1,6 @@
+import MessageStatus from "./MessageStatus";
+import SdkMessage from "../Sdk/Message";
+
 class Message {
   #message: any;
   #headers: any;
@@ -5,7 +8,7 @@ class Message {
   #sendingEndpoint: Endpoint;
   #messageIntent: string | undefined;
 
-  constructor(message: any) {
+  constructor(message: SdkMessage) {
     this.#message = message;
     this.#headers = message.headers;
     this.#receivingEndpoint = new Endpoint(message.receiving_endpoint);
@@ -13,7 +16,19 @@ class Message {
   }
 
   get messageId() {
-    return this.#message.id;
+    return this.#message.message_id;
+  }
+
+  get bodyUrl() {
+    return this.#message.body_url;
+  }
+
+  get criticalTime() {
+    return this.#message.critical_time;
+  }
+
+  get deliveryTime() {
+    return this.#message.delivery_time;
   }
 
   get processedAt() {
@@ -36,7 +51,7 @@ class Message {
     return this.#sendingEndpoint;
   }
 
-  get timeSent() {
+  get timeSent(): Date | undefined {
     return this.#message.time_sent ? new Date(this.#message.time_sent) : undefined;
   }
 
@@ -46,6 +61,23 @@ class Message {
 
   set messageIntent(value) {
     this.#messageIntent = value;
+  }
+
+  get status(): MessageStatus {
+    switch(this.#message.status.toLowerCase()) {
+      case "failed":
+        return MessageStatus.Failed;
+      case "resolved":
+        return MessageStatus.ResolvedSuccessfully;
+      case "repeatedfailure":
+        return MessageStatus.RepeatedFailure;
+      case "archivedfailure":
+        return MessageStatus.ArchivedFailure;
+      case "retryissued":
+        return MessageStatus.RetryIssued;
+      default:
+        return MessageStatus.Successful;
+    }
   }
 
   getHeaderByKey(key: string, defaultValue: string | undefined = undefined) {

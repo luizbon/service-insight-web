@@ -1,11 +1,42 @@
 import React, { useEffect, useState } from "react";
 import humanizeDuration from "humanize-duration";
-import { Stack, Table } from "react-bootstrap";
+import { Stack, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import ServiceControl from "../Utils/ServiceControl";
 import { MdOutlineCancel } from "react-icons/md";
 import Endpoint from "../Sdk/Endpoint";
-import Message from "../Sdk/Message";
+import Message from "../Models/Message";
+import MessageStatusInfo from "../Models/MessageStatusInfo";
+
+// Import all status icons
+import MessageStatus_Archived_Warn from '../assets/MessageStatus_Archived_Warn.svg';
+import MessageStatus_Archived from '../assets/MessageStatus_Archived.svg';
+import MessageStatus_Failed_Warn from '../assets/MessageStatus_Failed_Warn.svg';
+import MessageStatus_Failed from '../assets/MessageStatus_Failed.svg';
+import MessageStatus_RepeatedFailed_Warn from '../assets/MessageStatus_RepeatedFailed_Warn.svg';
+import MessageStatus_RepeatedFailed from '../assets/MessageStatus_RepeatedFailed.svg';
+import MessageStatus_ResolvedSuccessfully_Warn from '../assets/MessageStatus_ResolvedSuccessfully_Warn.svg';
+import MessageStatus_ResolvedSuccessfully from '../assets/MessageStatus_ResolvedSuccessfully.svg';
+import MessageStatus_RetryIssued_Warn from '../assets/MessageStatus_RetryIssued_Warn.svg';
+import MessageStatus_RetryIssued from '../assets/MessageStatus_RetryIssued.svg';
+import MessageStatus_Successful_Warn from '../assets/MessageStatus_Successful_Warn.svg';
+import MessageStatus_Successful from '../assets/MessageStatus_Successful.svg';
+
+// Create a mapping of status to icons
+const statusIcons: { [key: string]: string } = {
+    'MessageStatus_Archived_Warn': MessageStatus_Archived_Warn,
+    'MessageStatus_Archived': MessageStatus_Archived,
+    'MessageStatus_Failed_Warn': MessageStatus_Failed_Warn,
+    'MessageStatus_Failed': MessageStatus_Failed,
+    'MessageStatus_RepeatedFailed_Warn': MessageStatus_RepeatedFailed_Warn,
+    'MessageStatus_RepeatedFailed': MessageStatus_RepeatedFailed,
+    'MessageStatus_ResolvedSuccessfully_Warn': MessageStatus_ResolvedSuccessfully_Warn,
+    'MessageStatus_ResolvedSuccessfully': MessageStatus_ResolvedSuccessfully,
+    'MessageStatus_RetryIssued_Warn': MessageStatus_RetryIssued_Warn,
+    'MessageStatus_RetryIssued': MessageStatus_RetryIssued,
+    'MessageStatus_Successful_Warn': MessageStatus_Successful_Warn,
+    'MessageStatus_Successful': MessageStatus_Successful,
+};
 
 interface MessagesProps {
     connection: any;
@@ -114,7 +145,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                     <Table size="sm" hover>
                         <thead>
                             <tr>
-                                <th>Status</th>
+                                <th className="text-center">Status</th>
                                 <th>Message ID</th>
                                 <th>Message Type</th>
                                 <th>Time Sent</th>
@@ -122,23 +153,38 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                             </tr>
                         </thead>
                         <tbody>
-                            {messages.map((message, index) => (
+                            {messages.map((message, index) => {
+                                const messageStatusInfo = new MessageStatusInfo(message);
+                                return (
                                 <tr
                                     key={index}
                                     onClick={() => {
                                         setMessage(message);
-                                        setSelectedMessageId(message.message_id);
+                                        setSelectedMessageId(message.messageId);
                                     }}
-                                    className={selectedMessageId === message.message_id ? "table-active" : ""}
+                                    className={selectedMessageId === message.messageId ? "table-active" : ""}
                                     style={{ cursor: "pointer" }}
                                 >
-                                    <td>{message.status}</td>
-                                    <td>{message.message_id}</td>
-                                    <td>{message.message_type?.split('.').pop()}</td>
-                                    <td>{new Date(message.time_sent).toLocaleString()}</td>
-                                    <td>{formatProcessingTime(message.processing_time)}</td>
+                                    <td className="text-center">
+                                        <OverlayTrigger
+                                            placement="top"
+                                            overlay={<Tooltip>{messageStatusInfo.description}</Tooltip>}
+                                        >
+                                            <img 
+                                                src={statusIcons[messageStatusInfo.image]} 
+                                                alt={messageStatusInfo.description}
+                                                width="16"
+                                                height="16"
+                                            />
+                                        </OverlayTrigger>
+                                    </td>
+                                    <td>{message.messageId}</td>
+                                    <td>{message.messageType?.split('.').pop()}</td>
+                                    <td>{message.timeSent?.toLocaleString()}</td>
+                                    <td>{formatProcessingTime(message.processingTime)}</td>
                                 </tr>
-                            ))}
+                            );
+                            })}
                         </tbody>
                     </Table>
                 </div>

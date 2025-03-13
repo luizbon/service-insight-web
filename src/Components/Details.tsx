@@ -3,9 +3,10 @@ import MessageBody from "./MessageBody";
 import SequenceDiagram from "./SequenceDiagram";
 import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
+import Message from "../Models/Message";
 
 interface DetailsProps {
-    message: any;
+    message: Message | null;
     connection: any;
 }
 
