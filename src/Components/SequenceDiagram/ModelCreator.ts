@@ -17,7 +17,7 @@ class ModelCreator {
     #conversationStartHandlerName: string = "First";
 
     constructor(messages: Message[]) {
-        this.#messages = messages.map(message => new Message(message));
+        this.#messages = messages;
 
         this.#initialize();
     }
