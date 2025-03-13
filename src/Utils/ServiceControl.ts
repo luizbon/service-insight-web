@@ -1,4 +1,6 @@
+import Message from "../Models/Message";
 import Endpoint from "../Sdk/Endpoint";
+import SdkMessage from "../Sdk/Message";
 
 class ServiceControl {
   #baseUrl: string;
@@ -28,9 +30,9 @@ class ServiceControl {
     const url = this.#concatPath(this.#defaultEndpointsEndpoint);
     const response = await fetch(url);
     const data = await response.json();
-    
+
     const groupedEndpoints = data.reduce((acc: { [key: string]: Endpoint[] }, endpoint: Endpoint) => {
-      if(monitoredOnly && !endpoint.monitored) {
+      if (monitoredOnly && !endpoint.monitored) {
         return acc;
       }
       if (!acc[endpoint.name]) {
@@ -39,12 +41,12 @@ class ServiceControl {
       acc[endpoint.name].push(endpoint);
       return acc;
     }, {});
-    
+
     return groupedEndpoints;
   }
 
-  async getMessageData(message: any) {
-    const bodyUrl = message.body_url ?? this.#messageBodyEndpoint.replace("$0", message.message_id);
+  async getMessageData(message: Message): Promise<string> {
+    const bodyUrl = message.bodyUrl ?? this.#messageBodyEndpoint.replace("$0", message.messageId);
     const url = this.#concatPath(bodyUrl);
     const response = await fetch(url);
     const body = await response.text();
@@ -66,15 +68,16 @@ class ServiceControl {
     return await response.json();
   }
 
-  async getAuditMessages(endpoint: string | undefined, page: number, searchQuery: string | undefined, orderBy: string, ascending: boolean, pageSize: number) {
+  async getAuditMessages(endpoint: string | undefined, page: number, searchQuery: string | undefined, orderBy: string, ascending: boolean, pageSize: number):
+    Promise<{ totalCount: number, messages: Message[] }> {
     const messagesUrl = this.#concatSearch(this.#concatPath(endpoint ? this.#endpointMessagesEndpoint.replace("$0", endpoint) : this.#messagesEndpoint), searchQuery);
     const parameters = this.#appendSystemMessages(this.#appendOrdering(this.#appendPage(this.#appendPaging(this.#appendSearchQuery("", searchQuery), pageSize ?? this.#defaultPageSize), page), orderBy, ascending));
 
     const response = await fetch(`${messagesUrl}?${parameters}`);
     const totalCount = Number(response.headers.get('total-count') ?? 0);
-    const messages = await response.json();
+    const messages = (await response.json()) as SdkMessage[];
 
-    return { totalCount, messages };
+    return { totalCount, messages: messages.map((message: SdkMessage) => new Message(message)) };
   }
 
   async getConversationById(conversationId: string, pageSize?: number) {

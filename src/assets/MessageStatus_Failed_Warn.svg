@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Red circle with white X -->
+  <circle cx="8" cy="8" r="8" fill="#C63F3F"/>
+  <path d="M8 6.586L10.475 4.111 11.889 5.525 9.414 8 11.889 10.475 10.475 11.889 8 9.414 5.525 11.889 4.111 10.475 6.586 8 4.111 5.525 5.525 4.111 8 6.586z" fill="#FFFFFF"/>
+  
+  <!-- Yellow warning triangle -->
+  <path d="M10.5 7.2L16 16H5L10.5 7.2z" fill="#EBBD06"/>
+  
+  <!-- Black exclamation mark -->
+  <path d="M11 13V10H10V13H11ZM11 15V14H10V15H11Z" fill="#000000"/>
+</svg>

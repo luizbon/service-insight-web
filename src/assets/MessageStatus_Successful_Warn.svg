@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <!-- Green circle with checkmark -->
+  <circle cx="8" cy="8" r="8" fill="#6CC63F"/>
+  <path d="M11.249 4.277L6.714 8.81 4.751 6.846 3.294 8.303 6.714 11.723 12.706 5.733 11.249 4.277z" fill="white"/>
+  
+  <!-- Yellow warning triangle -->
+  <path d="M10.5 7.2L16 16H5L10.5 7.2z" fill="#EBBD06"/>
+  
+  <!-- Exclamation mark -->
+  <path d="M10 10v3h1v-3h-1zm0 4v1h1v-1h-1z" fill="black"/>
+</svg>

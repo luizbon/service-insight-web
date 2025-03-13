@@ -5,7 +5,7 @@ import Messages from './Components/Messages';
 import Details from './Components/Details';
 import { Stack } from 'react-bootstrap';
 import Endpoint from './Sdk/Endpoint';
-import Message from './Sdk/Message';
+import Message from './Models/Message';
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);

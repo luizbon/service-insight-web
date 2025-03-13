@@ -1,4 +1,7 @@
 interface Message {
+    sending_endpoint: any;
+    receiving_endpoint: any;
+    headers: any;
     status: string;
     message_id: string;
     message_type: string;

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import ServiceControl from '../Utils/ServiceControl'; // Import the ServiceControl class
+import Message from '../Models/Message';
 
 interface MessageBodyProps {
-  message: any;
+  message: Message | null;
   connection: any;
 }
 
