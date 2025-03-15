@@ -1,9 +1,11 @@
 import MessageStatus from "./MessageStatus";
 import SdkMessage from "../Sdk/Message";
+import DynamicPropertyResolver from "./DynamicPropertyResolver";
 
 class Message {
   #message: any;
-  #headers: any;
+  #headers: KeyValuePair[];
+  #typedHeaders: DynamicPropertyResolver;
   #receivingEndpoint: Endpoint;
   #sendingEndpoint: Endpoint;
   #messageIntent: string | undefined;
@@ -11,6 +13,7 @@ class Message {
   constructor(message: SdkMessage) {
     this.#message = message;
     this.#headers = message.headers;
+    this.#typedHeaders = new DynamicPropertyResolver(message.headers);
     this.#receivingEndpoint = new Endpoint(message.receiving_endpoint);
     this.#sendingEndpoint = new Endpoint(message.sending_endpoint);
   }
@@ -78,6 +81,10 @@ class Message {
       default:
         return MessageStatus.Successful;
     }
+  }
+
+  get headers(): any {
+    return this.#typedHeaders;
   }
 
   getHeaderByKey(key: string, defaultValue: string | undefined = undefined) {

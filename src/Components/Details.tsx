@@ -4,6 +4,7 @@ import SequenceDiagram from "./SequenceDiagram";
 import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import Message from "../Models/Message";
+import MessageProperties from "./MessageProperties/MessageProperties";
 
 interface DetailsProps {
     message: Message | null;
@@ -35,6 +36,9 @@ const Details: React.FC<DetailsProps> = ({ message, connection }) => {
             </Tab>
             <Tab eventKey="body" title="Body">
                 <ErrorBoundary fallbackRender={fallbackRender}><MessageBody message={message} connection={connection} /></ErrorBoundary>
+            </Tab>
+            <Tab eventKey="properties" title="Properties">
+                <ErrorBoundary fallbackRender={fallbackRender}><MessageProperties message={message} /></ErrorBoundary>
             </Tab>
         </Tabs>        
     )

@@ -21,6 +21,7 @@ import MessageStatus_RetryIssued_Warn from '../assets/MessageStatus_RetryIssued_
 import MessageStatus_RetryIssued from '../assets/MessageStatus_RetryIssued.svg';
 import MessageStatus_Successful_Warn from '../assets/MessageStatus_Successful_Warn.svg';
 import MessageStatus_Successful from '../assets/MessageStatus_Successful.svg';
+import TypeHumanizer from "../Utils/TypeHumanizer";
 
 // Create a mapping of status to icons
 const statusIcons: { [key: string]: string } = {
@@ -74,12 +75,6 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
 
     const executeSearch = () => {
         return fetchMessages(searchTerm);
-    };
-
-    const formatProcessingTime = (time: string) => {
-        const date = new Date(`1970-01-01T${time}Z`);
-        const milliseconds = date.getTime();
-        return humanizeDuration(milliseconds, { units: ["h", "m", "s", "ms"], round: true });
     };
 
     const totalPages = Math.ceil(totalCount / messagesPerPage);
@@ -181,7 +176,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                     <td>{message.messageId}</td>
                                     <td>{message.messageType?.split('.').pop()}</td>
                                     <td>{message.timeSent?.toLocaleString()}</td>
-                                    <td>{formatProcessingTime(message.processingTime)}</td>
+                                    <td>{TypeHumanizer.formatProcessingTime(message.processingTime)}</td>
                                 </tr>
                             );
                             })}

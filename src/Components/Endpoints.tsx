@@ -30,6 +30,10 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
 
     useEffect(() => {
         if (!connection) return;
+        if (activeId === connection.service_control) {
+            setEndpoint(undefined);
+            return;
+        }
         for(const key in endpoints) {
             const endpointGroup = endpoints[key];
             for(const endpoint of endpointGroup) {
@@ -42,7 +46,7 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
                 }
             }
         }
-    }, [activeId]);
+    }, [activeId, connection]);
 
     useEffect(() => {
         if (!connection){
@@ -50,20 +54,36 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
             return;
         }
         const nodes: TreeNode[] = [];
-        const root: TreeNode = { id: connection.service_control, label: connection.service_control, children: [] };
+        const root: TreeNode = { 
+            id: connection.service_control, 
+            label: connection.service_control, 
+            children: [] 
+        };
         nodes.push(root);
         
         for (const key in endpoints) {
             const endpointGroup = endpoints[key];
             if(endpointGroup.length > 1) {
-                const endpointNode: TreeNode = { id: endpointGroup[0].name, label: endpointGroup[0].name, children: [] };
+                const endpointNode: TreeNode = { 
+                    id: endpointGroup[0].name, 
+                    label: endpointGroup[0].name, 
+                    children: [] 
+                };
                 endpointGroup.forEach((endpoint: any) => {
-                    endpointNode.children.push({ id: endpoint.id, label: endpoint.host_display_name, children: [] });
+                    endpointNode.children.push({ 
+                        id: endpoint.id, 
+                        label: endpoint.host_display_name, 
+                        children: [] 
+                    });
                 });
                 root.children.push(endpointNode);
             } else {
                 const endpoint = endpointGroup[0];
-                const endpointNode: TreeNode = { id: endpoint.id, label: endpoint.name, children: [] };
+                const endpointNode: TreeNode = { 
+                    id: endpoint.id, 
+                    label: endpoint.name, 
+                    children: [] 
+                };
                 root.children.push(endpointNode);
             }
         }
