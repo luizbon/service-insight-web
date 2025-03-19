@@ -44,14 +44,14 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
   };
 
   return (
-    <Navbar bg="primary" variant="dark" fixed="top">
+    <Navbar bg="primary" variant="dark" fixed="top" aria-label="Main navigation">
       <Container fluid>
         <Navbar.Brand href="#home">
-          <img src={logo} className="App-logo d-inline-block align-top mr-2" alt="logo" />
+          <img src={logo} className="App-logo d-inline-block align-top mr-2" alt="Service Insight logo" />
           Service Insight
         </Navbar.Brand>
         <Nav className="ml-auto">
-          <Form className="d-inline" onSubmit={handleSubmit}>
+          <Form className="d-inline" onSubmit={handleSubmit} aria-label="Service Control connection form">
             <InputGroup>
               <FormControl
                 ref={search}
@@ -62,11 +62,23 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
                 onChange={(e) => setInputValue(e.target.value)}
                 disabled={!!connection}
                 isInvalid={!!error}
+                aria-label="Service Control URL"
+                aria-describedby={error ? "url-error" : undefined}
               />
-              <Button variant="outline-light" type="submit" hidden={!!connection}>
+              <Button 
+                variant="outline-light" 
+                type="submit" 
+                hidden={!!connection}
+                aria-label="Connect to Service Control"
+              >
                 <PiPlugsFill />
               </Button>
-              <Button variant="outline-light" onClick={handleDisconnect} hidden={!connection}>
+              <Button 
+                variant="outline-light" 
+                onClick={handleDisconnect} 
+                hidden={!connection}
+                aria-label="Disconnect from Service Control"
+              >
                 <PiPlugsConnectedFill />
               </Button>
             </InputGroup>
@@ -74,7 +86,7 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
         </Nav>
         <Overlay target={search.current} show={!!error} placement="left">
           {(props) => (
-            <Tooltip {...props}>
+            <Tooltip id="url-error" {...props} aria-live="polite">
               {error}
             </Tooltip>
           )}

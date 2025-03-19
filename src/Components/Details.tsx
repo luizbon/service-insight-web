@@ -24,17 +24,17 @@ function fallbackRender({ error }: { error: Error, resetErrorBoundary: () => voi
 const Details: React.FC<DetailsProps> = ({ message, connection }) => {
     return (
         message && 
-        <Tabs className="mt-3" justify>
-            <Tab eventKey="flowDiagram" title="Flow Diagram">
+        <Tabs className="mt-3" justify aria-label="Message details">
+            <Tab eventKey="flowDiagram" title="Flow Diagram" aria-label="Flow diagram tab">
                 <ErrorBoundary fallbackRender={fallbackRender}>Flow Diagram</ErrorBoundary>
             </Tab>
-            <Tab eventKey="saga" title="Saga">
+            <Tab eventKey="saga" title="Saga" aria-label="Saga tab">
                 <ErrorBoundary fallbackRender={fallbackRender}>Saga</ErrorBoundary>
             </Tab>
-            <Tab eventKey="sequenceDiagram" title="Sequence Diagram">
+            <Tab eventKey="sequenceDiagram" title="Sequence Diagram" aria-label="Sequence diagram tab">
                 <ErrorBoundary fallbackRender={fallbackRender}><SequenceDiagram connection={connection} message={message} /></ErrorBoundary>
             </Tab>
-            <Tab eventKey="body" title="Body">
+            <Tab eventKey="body" title="Body" aria-label="Message body tab">
                 <ErrorBoundary fallbackRender={fallbackRender}><MessageBody message={message} connection={connection} /></ErrorBoundary>
             </Tab>
             <Tab eventKey="properties" title="Properties">

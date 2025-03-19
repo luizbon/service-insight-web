@@ -80,28 +80,30 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
 
     return (
         <>
-            <h3>Messages
+            <h3 id="messages-heading">Messages
                 {endpoint && ` (${endpoint.name})`}
             </h3>
             {totalCount >= 0 &&
                 <div>
                     <Stack direction="horizontal" gap={3} className="justify-content-end">
                         <div>
-                            <span>{totalCount} messages</span>
+                            <span aria-live="polite">{totalCount} messages</span>
                         </div>
-                        <div className="pagination-controls">
+                        <div className="pagination-controls" role="navigation" aria-label="Messages pagination">
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
                                 className="btn btn-primary"
+                                aria-label="Previous page"
                             >
                                 Previous
                             </button>
-                            <span className="mx-2">Page {currentPage} of {totalPages}</span>
+                            <span className="mx-2" aria-current="page">Page {currentPage} of {totalPages}</span>
                             <button
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
                                 className="btn btn-primary"
+                                aria-label="Next page"
                             >
                                 Next
                             </button>
@@ -119,6 +121,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                     }
                                 }}
                                 className="form-control"
+                                aria-label="Search messages"
                             />
                             <button className="btn btn-outline-secondary" type="button" onClick={() => executeSearch()}>
                                 <FaSearch />
@@ -136,7 +139,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                             </button>
                         </div>
                     </Stack>
-                    <Table size="sm" hover>
+                    <Table size="sm" hover role="table" aria-label="Messages table">
                         <thead>
                             <tr>
                                 <th className="text-center">Status</th>
