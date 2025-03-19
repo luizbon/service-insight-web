@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Row, Col, Container, Stack } from 'react-bootstrap';
+import { Card, Row, Col, Stack } from 'react-bootstrap';
 import Message from '../../Models/Message';
 import TypeHumanizer from '../../Utils/TypeHumanizer';
 

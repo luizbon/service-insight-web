@@ -10,10 +10,8 @@ class TypeHumanizer {
     return objectName.replace('+', '.');
   }
 
-  static formatProcessingTime = (time: string) => {
-    const date = new Date(`1970-01-01T${time}Z`);
-    const milliseconds = date.getTime();
-    return humanizeDuration(milliseconds, { units: ["h", "m", "s", "ms"], round: true });
+  static formatProcessingTime = (time: number) => {
+    return humanizeDuration(time, { units: ["h", "m", "s", "ms"], round: true });
   };
 }
 

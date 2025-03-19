@@ -1,12 +1,36 @@
+interface Endpoint {
+    name: string;
+    host_id: string;
+    host: string;
+}
+
+interface Saga {
+    saga_id: string;
+    saga_type: string;
+    change_status: string;
+}
+
 interface Message {
-    sending_endpoint: any;
-    receiving_endpoint: any;
+    body_size: number;
+    body_url: string;
+    conversation_id: string;
+    critical_time: string;
+    delivery_time: string;
     headers: KeyValuePair[];
-    status: string;
+    id: string;
+    instance_id: string;
+    invoked_sagas: Saga[];
+    is_system_message: boolean;
     message_id: string;
+    message_intent: string;
     message_type: string;
-    time_sent: string;
+    originates_from_saga: Saga;
+    processed_at: string;
     processing_time: string;
+    receiving_endpoint: Endpoint;
+    sending_endpoint: Endpoint;
+    status: string;
+    time_sent: string;
 }
 
 export default Message;

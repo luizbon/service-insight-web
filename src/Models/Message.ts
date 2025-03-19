@@ -3,7 +3,7 @@ import SdkMessage from "../Sdk/Message";
 import DynamicPropertyResolver from "./DynamicPropertyResolver";
 
 class Message {
-  #message: any;
+  #message: SdkMessage;
   #headers: KeyValuePair[];
   #typedHeaders: DynamicPropertyResolver;
   #receivingEndpoint: Endpoint;
@@ -27,19 +27,19 @@ class Message {
   }
 
   get criticalTime() {
-    return this.#message.critical_time;
+    return this.#convertTimeToMilliseconds(this.#message.critical_time);
   }
 
   get deliveryTime() {
-    return this.#message.delivery_time;
+    return this.#convertTimeToMilliseconds(this.#message.delivery_time);
   }
 
   get processedAt() {
     return new Date(this.#message.processed_at);
   }
 
-  get processingTime() {
-    return this.#message.processing_time;
+  get processingTime(): number {
+    return this.#convertTimeToMilliseconds(this.#message.processing_time);
   }
 
   get messageType() {
@@ -64,6 +64,26 @@ class Message {
 
   set messageIntent(value) {
     this.#messageIntent = value;
+  }
+
+  get id() {
+    return this.#message.id;
+  }
+
+  get isSystemMessage() {
+    return this.#message.is_system_message;
+  }
+
+  get conversationId() {
+    return this.#message.conversation_id;
+  }
+
+  get bodySize() {
+    return this.#message.body_size;
+  }
+
+  get instanceId() {
+    return this.#message.instance_id;
   }
 
   get status(): MessageStatus {
@@ -92,6 +112,11 @@ class Message {
     const lowCaseKey = key.toLocaleLowerCase();
     const header = this.#headers.find((header: any) => header.key.toLocaleLowerCase() === lowCaseKey || header.key.toLocaleLowerCase() === keyWithPrefix);
     return header ? header.value : defaultValue;
+  }
+
+  #convertTimeToMilliseconds(time: string): number {
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    return (hours * 3600 + minutes * 60 + seconds) * 1000;
   }
 }
 

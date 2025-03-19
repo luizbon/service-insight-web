@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import humanizeDuration from "humanize-duration";
 import { Stack, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import ServiceControl from "../Utils/ServiceControl";

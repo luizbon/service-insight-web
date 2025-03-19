@@ -76,7 +76,7 @@ class ServiceControl {
     const response = await fetch(`${messagesUrl}?${parameters}`);
     const totalCount = Number(response.headers.get('total-count') ?? 0);
     const messages = (await response.json()) as SdkMessage[];
-
+      console.log(messages);
     return { totalCount, messages: messages.map((message: SdkMessage) => new Message(message)) };
   }
 
