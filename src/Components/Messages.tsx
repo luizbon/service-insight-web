@@ -57,23 +57,35 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
         if (!connection) {
             setTotalCount(-1);
             setMessages([]);
+            setCurrentPage(1);
             return;
         }
         fetchMessages();
-    }, [connection, endpoint, currentPage]);
+    }, [connection, endpoint, currentPage, searchTerm]); // Add searchTerm as a dependency
 
-    const fetchMessages = (q?: string) => {
-        const serviceControl = new ServiceControl(connection);
-        serviceControl.getAuditMessages(endpoint?.name, currentPage, q, "time_sent", false, messagesPerPage)
-            .then(data => {
-                setMessages(data.messages);
-                setTotalCount(data.totalCount);
-            })
-            .catch(error => console.error('Error fetching messages:', error));
+    const fetchMessages = async () => {
+        try {
+            const serviceControl = new ServiceControl(connection);
+            const data = await serviceControl.getAuditMessages(
+                endpoint?.name, 
+                currentPage - 1, // Adjust for 0-based paging
+                searchTerm || undefined, 
+                "time_sent", 
+                false, 
+                messagesPerPage
+            );
+            setMessages(data.messages);
+            setTotalCount(data.totalCount);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            setMessages([]);
+            setTotalCount(0);
+        }
     };
 
     const executeSearch = () => {
-        return fetchMessages(searchTerm);
+        setCurrentPage(1); // Reset to first page when searching
+        // fetchMessages will be called by the useEffect due to searchTerm change
     };
 
     const formatProcessingTime = (time: string) => {
@@ -126,7 +138,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                 }}
                                 className="form-control"
                             />
-                            <button className="btn btn-outline-secondary" type="button" onClick={() => executeSearch()}>
+                            <button className="btn btn-outline-secondary" type="button" onClick={executeSearch}>
                                 <FaSearch />
                             </button>
                             <button
@@ -134,8 +146,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                 type="button"
                                 onClick={() => {
                                     setSearchTerm("");
-                                    setCurrentPage(1); // Reset to the first page
-                                    fetchMessages(); // Directly call fetchMessages to ensure search is executed
+                                    setCurrentPage(1);
                                 }}
                             >
                                 <MdOutlineCancel />
