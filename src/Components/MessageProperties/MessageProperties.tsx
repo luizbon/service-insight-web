@@ -58,19 +58,19 @@ const MessageProperties: React.FC<MessagePropertiesProps> = ({ message }) => {
         {
             name: 'Errors',
             properties: [
-                {name: 'Exception Info', value: message.headers.exceptionInfo},
+                {name: 'Exception Info', value: message.headers.exceptionInfo.stackTrace},
                 {name: 'Failed Queue', value: message.headers.failedQueue},
                 {name: 'Time of Failure', value: message.headers.timeOfFailure},
             ]
         },
-        {
-            name: 'Gateway',
-            properties: []
-        },
-        {
-            name: 'Saga',
-            properties: []
-        }
+        // {
+        //     name: 'Gateway',
+        //     properties: []
+        // },
+        // {
+        //     name: 'Saga',
+        //     properties: []
+        // }
     ];
     return (
         <Row>
