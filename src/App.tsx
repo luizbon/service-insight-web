@@ -10,8 +10,8 @@ import Message from './Models/Message';
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [endpoint, setEndpoint] = useState<Endpoint | undefined>(undefined);
-  const [connection, setConnection] = useState<any>(null);
-  const [message, setMessage] = useState<Message | null>(null);
+  const [connection, setConnection] = useState<any>(undefined);
+  const [message, setMessage] = useState<Message | undefined>(undefined);
 
   return (
     <Layout setEndpoint={setEndpoint} setConnection={setConnection} connection={connection}>

@@ -180,7 +180,7 @@ class ModelCreator {
 
 class MessageTreeNode {
     #message: Message;
-    #parent: string | null;
+    #parent: string | undefined;
     #children: MessageTreeNode[] = [];
 
     constructor(message: Message) {

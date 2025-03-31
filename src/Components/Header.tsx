@@ -4,8 +4,8 @@ import { PiPlugsConnectedFill, PiPlugsFill } from "react-icons/pi";
 import logo from '../assets/react.svg';
 
 interface HeaderProps {
-  setConnection: (connection: { service_control: string, response: any } | null) => void;
-  connection: { service_control: string, response: any } | null;
+  setConnection: (connection: { service_control: string, response: any } | undefined) => void;
+  connection: { service_control: string, response: any } | undefined;
 }
 
 const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
   };
 
   const handleDisconnect = () => {
-    setConnection(null);
+    setConnection(undefined);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -84,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
             </InputGroup>
           </Form>
         </Nav>
-        <Overlay target={search.current} show={!!error} placement="left">
+        <Overlay target={search.current || null} show={!!error} placement="left">
           {(props) => (
             <Tooltip id="url-error" {...props} aria-live="polite">
               {error}

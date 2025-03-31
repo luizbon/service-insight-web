@@ -78,27 +78,29 @@ const MessageProperties: React.FC<MessagePropertiesProps> = ({ message }) => {
     ];
     return (
         <Row>
-            {sections.map((section, index) => (
-                <Col xs={12} md={6} key={index}>
-                    <Card className="mb-4">
-                        <Card.Header as="h5">{section.name}</Card.Header>
-                        <Card.Body>
-                            <Table striped hover size="sm">
-                                <tbody>
-                                    {section.properties
-                                        .filter(prop => prop.value != null && prop.value !== '')
-                                        .map((property, index) => (
-                                            <tr key={index}>
-                                                <td className="text-muted" style={{ width: '30%' }}>{property.name}:</td>
-                                                <td className="text-break">{property.value}</td>
-                                            </tr>
-                                        ))}
-                                </tbody>
-                            </Table>
-                        </Card.Body>
-                    </Card>
-                </Col>
-            ))}
+            {sections
+                .filter(section => section.properties.some(prop => prop.value != undefined && prop.value !== ''))
+                .map((section, index) => (
+                    <Col xs={12} md={6} key={index}>
+                        <Card className="mb-4">
+                            <Card.Header as="h5">{section.name}</Card.Header>
+                            <Card.Body>
+                                <Table striped hover size="sm">
+                                    <tbody>
+                                        {section.properties
+                                            .filter(prop => prop.value != undefined && prop.value !== '')
+                                            .map((property, index) => (
+                                                <tr key={index}>
+                                                    <td className="text-muted" style={{ width: '30%' }}>{property.name}:</td>
+                                                    <td className="text-break">{property.value}</td>
+                                                </tr>
+                                            ))}
+                                    </tbody>
+                                </Table>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                ))}
         </Row>
     );
 };

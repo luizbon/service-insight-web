@@ -7,7 +7,7 @@ import Message from "../Models/Message";
 import MessageProperties from "./MessageProperties/MessageProperties";
 
 interface DetailsProps {
-    message: Message | null;
+    message: Message | undefined;
     connection: any;
 }
 

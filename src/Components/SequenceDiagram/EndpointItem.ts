@@ -6,7 +6,7 @@ class EndpointItem {
     #timeline: EndpointTimeline;
     #handlers: Handler[];
     
-    constructor(name: string, host: string, id: string, version: string | null) {
+    constructor(name: string, host: string, id: string, version: string | undefined) {
         this.#fullName = name;
 
         this.#hosts = new Set();
@@ -38,7 +38,7 @@ class EndpointItem {
     }
 
     get versions() {
-        return Array.from(this.hosts).map(host => host.versions).join(',') ?? null;
+        return Array.from(this.hosts).map(host => host.versions).join(',') ?? undefined;
     }
 
     get handlers() {
@@ -86,7 +86,7 @@ class EndpointHost {
     #host: string;
     #versions: Set<string>;
 
-    constructor(host: string, hostId: string, version: string | null) {
+    constructor(host: string, hostId: string, version: string | undefined) {
         this.#hostId = hostId;
         this.#host = host;
         this.#versions = new Set();
@@ -105,7 +105,7 @@ class EndpointHost {
 
     get versions() {
         if (this.#versions.size === 0) {
-            return null;
+            return undefined;
         }
         return Array.from(this.#versions).join(',');
     }

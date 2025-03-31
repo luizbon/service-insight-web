@@ -6,7 +6,7 @@ class TypeHumanizer {
 
     const clazz = type.split(',')[0];
     const objectName = clazz.split('.').pop();
-    if (!objectName) return undefined; // Add null check
+    if (!objectName) return undefined;
     return objectName.replace('+', '.');
   }
 

@@ -62,7 +62,7 @@ class ServiceControl {
     if (body.startsWith("<?xml")) {
       return body;
     }
-    return JSON.stringify(JSON.parse(body), null, 2);
+    return JSON.stringify(JSON.parse(body), undefined, 2);
   }
 
   async retryMessage(messageId: string, instanceId?: string) {

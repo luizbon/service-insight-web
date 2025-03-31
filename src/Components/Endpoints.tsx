@@ -4,7 +4,7 @@ import ServiceControl from '../Utils/ServiceControl'; // Import ServiceControl f
 import Endpoint from '../Sdk/Endpoint';
 
 interface EndpointsProps {
-    connection: { service_control: string } | null;
+    connection: { service_control: string } | undefined;
     setEndpoint: (endpoint: Endpoint | undefined) => void;
 }
 
