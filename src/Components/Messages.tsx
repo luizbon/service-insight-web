@@ -107,7 +107,14 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                         <div>
                             <span>{totalCount} messages</span>
                         </div>
-                        <div className="pagination-controls">
+                        <div className="btn-group">
+                            <button
+                                onClick={() => setCurrentPage(1)}
+                                disabled={currentPage === 1}
+                                className="btn btn-primary"
+                            >
+                                First
+                            </button>
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
@@ -115,13 +122,22 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                             >
                                 Previous
                             </button>
-                            <span className="mx-2">Page {currentPage} of {totalPages}</span>
+                            <button className="btn btn-secondary" disabled>
+                                Page {currentPage} of {totalPages}
+                            </button>
                             <button
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
                                 className="btn btn-primary"
                             >
                                 Next
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage(totalPages)}
+                                disabled={currentPage === totalPages}
+                                className="btn btn-primary"
+                            >
+                                Last
                             </button>
                         </div>
 
