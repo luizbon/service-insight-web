@@ -67,7 +67,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
         try {
             const serviceControl = new ServiceControl(connection);
             const data = await serviceControl.getAuditMessages(
-                endpoint?.name, 
+                endpoint?.endpoint_details?.name, 
                 currentPage - 1, // Adjust for 0-based paging
                 searchTerm || undefined, 
                 "time_sent", 
@@ -93,7 +93,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
     return (
         <>
             <h3 id="messages-heading">Messages
-                {endpoint && ` (${endpoint.name})`}
+                {endpoint && ` (${endpoint.endpoint_details.name})`}
             </h3>
             {totalCount >= 0 &&
                 <div>

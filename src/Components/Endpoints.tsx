@@ -40,7 +40,7 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
                 if(endpoint.id === activeId) {
                     setEndpoint(endpoint);
                     return;
-                } else if(endpoint.name === activeId) {
+                } else if(endpoint.endpoint_details.name === activeId) {
                     setEndpoint(endpoint);
                     return;
                 }
@@ -65,8 +65,8 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
             const endpointGroup = endpoints[key];
             if(endpointGroup.length > 1) {
                 const endpointNode: TreeNode = { 
-                    id: endpointGroup[0].name, 
-                    label: endpointGroup[0].name, 
+                    id: endpointGroup[0].endpoint_details.name, 
+                    label: endpointGroup[0].endpoint_details.name, 
                     children: [] 
                 };
                 endpointGroup.forEach((endpoint: any) => {
@@ -81,7 +81,7 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
                 const endpoint = endpointGroup[0];
                 const endpointNode: TreeNode = { 
                     id: endpoint.id, 
-                    label: endpoint.name, 
+                    label: endpoint.endpoint_details.name, 
                     children: [] 
                 };
                 root.children.push(endpointNode);
@@ -97,9 +97,6 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
                     items={nodes} 
                     onItemClick={(_event, itemId) => {
                         setActiveId(itemId);
-                        if (itemId === connection.service_control) {
-                            setEndpoint(undefined);
-                        }
                     }} 
                     expansionTrigger="iconContainer"
                     defaultExpandedItems={[connection.service_control]} 
