@@ -1,6 +1,7 @@
 import MessageStatus from "./MessageStatus";
 import SdkMessage from "../Sdk/Message";
 import DynamicPropertyResolver from "./DynamicPropertyResolver";
+import { MessageEndpoint } from "../Sdk/Message";
 
 class Message {
   #message: SdkMessage;
@@ -125,7 +126,7 @@ class Message {
 class Endpoint {
   #endpointDetails: EndpointDetails;
 
-  constructor(endpointDetails: EndpointDetails) {
+  constructor(endpointDetails: MessageEndpoint) {
     this.#endpointDetails = new EndpointDetails(endpointDetails);
   }
 
@@ -170,7 +171,7 @@ class EndpointDetails {
   #host: string;
   #hostId: string;
 
-  constructor(endpoint: any) {
+  constructor(endpoint: MessageEndpoint) {
     this.#host = endpoint.host;
     this.#hostId = endpoint.host_id;
     this.#name = endpoint.name;

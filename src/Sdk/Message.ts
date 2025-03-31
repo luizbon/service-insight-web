@@ -1,4 +1,4 @@
-interface Endpoint {
+export interface MessageEndpoint {
     name: string;
     host_id: string;
     host: string;
@@ -27,8 +27,8 @@ interface Message {
     originates_from_saga: Saga;
     processed_at: string;
     processing_time: string;
-    receiving_endpoint: Endpoint;
-    sending_endpoint: Endpoint;
+    receiving_endpoint: MessageEndpoint;
+    sending_endpoint: MessageEndpoint;
     status: string;
     time_sent: string;
 }
