@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Row, Col, Stack } from 'react-bootstrap';
+import { Card, Row, Col, Table } from 'react-bootstrap';
 import Message from '../../Models/Message';
 import TypeHumanizer from '../../Utils/TypeHumanizer';
 
@@ -58,9 +58,13 @@ const MessageProperties: React.FC<MessagePropertiesProps> = ({ message }) => {
         {
             name: 'Errors',
             properties: [
-                {name: 'Exception Info', value: message.getHeaderByKey('exceptionInfo.stackTrace', '')},
-                {name: 'Failed Queue', value: message.headers.failedQueue},
-                {name: 'Time of Failure', value: message.headers.timeOfFailure},
+                {name: 'Failed Queue', value: message.getHeaderByKey('failedQ')},
+                {name: 'Exception Type', value: message.getHeaderByKey('exceptionInfo.exceptionType', '')},
+                {name: 'Help Link', value: message.getHeaderByKey('exceptionInfo.helpLink', '')},
+                {name: 'Message', value: message.getHeaderByKey('exceptionInfo.message', '')},
+                {name: 'Source', value: message.getHeaderByKey('exceptionInfo.source', '')},
+                {name: 'Stack Trace', value: message.getHeaderByKey('exceptionInfo.stackTrace', '')},
+                {name: 'Time of Failure', value: message.headers.timeOfFailure}
             ]
         },
         // {
@@ -79,14 +83,18 @@ const MessageProperties: React.FC<MessagePropertiesProps> = ({ message }) => {
                     <Card className="mb-4">
                         <Card.Header as="h5">{section.name}</Card.Header>
                         <Card.Body>
-                            {section.properties
-                                .filter(prop => prop.value != null && prop.value !== '')
-                                .map((property, index) => (
-                                    <Stack direction="horizontal" gap={3} key={index}>
-                                        <div className="text-muted me-2">{property.name}:</div>
-                                        <div className="text-break ms-auto">{property.value}</div>
-                                    </Stack>
-                                ))}
+                            <Table striped hover size="sm">
+                                <tbody>
+                                    {section.properties
+                                        .filter(prop => prop.value != null && prop.value !== '')
+                                        .map((property, index) => (
+                                            <tr key={index}>
+                                                <td className="text-muted" style={{ width: '30%' }}>{property.name}:</td>
+                                                <td className="text-break">{property.value}</td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </Table>
                         </Card.Body>
                     </Card>
                 </Col>
