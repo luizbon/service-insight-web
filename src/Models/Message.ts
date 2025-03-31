@@ -1,9 +1,12 @@
 import MessageStatus from "./MessageStatus";
 import SdkMessage from "../Sdk/Message";
+import DynamicPropertyResolver from "./DynamicPropertyResolver";
+import { MessageEndpoint } from "../Sdk/Message";
 
 class Message {
-  #message: any;
-  #headers: any;
+  #message: SdkMessage;
+  #headers: KeyValuePair[];
+  #typedHeaders: DynamicPropertyResolver;
   #receivingEndpoint: Endpoint;
   #sendingEndpoint: Endpoint | undefined;
   #messageIntent: string | undefined;
@@ -11,6 +14,7 @@ class Message {
   constructor(message: SdkMessage) {
     this.#message = message;
     this.#headers = message.headers;
+    this.#typedHeaders = new DynamicPropertyResolver(message.headers);
     this.#receivingEndpoint = new Endpoint(message.receiving_endpoint);
     if(message.sending_endpoint) {
       this.#sendingEndpoint = new Endpoint(message.sending_endpoint);
@@ -26,19 +30,19 @@ class Message {
   }
 
   get criticalTime() {
-    return this.#message.critical_time;
+    return this.#convertTimeToMilliseconds(this.#message.critical_time);
   }
 
   get deliveryTime() {
-    return this.#message.delivery_time;
+    return this.#convertTimeToMilliseconds(this.#message.delivery_time);
   }
 
   get processedAt() {
     return new Date(this.#message.processed_at);
   }
 
-  get processingTime() {
-    return this.#message.processing_time;
+  get processingTime(): number {
+    return this.#convertTimeToMilliseconds(this.#message.processing_time);
   }
 
   get messageType() {
@@ -65,6 +69,26 @@ class Message {
     this.#messageIntent = value;
   }
 
+  get id() {
+    return this.#message.id;
+  }
+
+  get isSystemMessage() {
+    return this.#message.is_system_message;
+  }
+
+  get conversationId() {
+    return this.#message.conversation_id;
+  }
+
+  get bodySize() {
+    return this.#message.body_size;
+  }
+
+  get instanceId() {
+    return this.#message.instance_id;
+  }
+
   get status(): MessageStatus {
     switch(this.#message.status.toLowerCase()) {
       case "failed":
@@ -82,18 +106,27 @@ class Message {
     }
   }
 
+  get headers(): any {
+    return this.#typedHeaders;
+  }
+
   getHeaderByKey(key: string, defaultValue: string | undefined = undefined) {
     const keyWithPrefix = `NServiceBus.${key}`.toLocaleLowerCase();
     const lowCaseKey = key.toLocaleLowerCase();
     const header = this.#headers.find((header: any) => header.key.toLocaleLowerCase() === lowCaseKey || header.key.toLocaleLowerCase() === keyWithPrefix);
     return header ? header.value : defaultValue;
   }
+
+  #convertTimeToMilliseconds(time: string): number {
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    return (hours * 3600 + minutes * 60 + seconds) * 1000;
+  }
 }
 
 class Endpoint {
   #endpointDetails: EndpointDetails;
 
-  constructor(endpointDetails: EndpointDetails) {
+  constructor(endpointDetails: MessageEndpoint) {
     this.#endpointDetails = new EndpointDetails(endpointDetails);
   }
 
@@ -138,7 +171,7 @@ class EndpointDetails {
   #host: string;
   #hostId: string;
 
-  constructor(endpoint: any) {
+  constructor(endpoint: MessageEndpoint) {
     this.#host = endpoint.host;
     this.#hostId = endpoint.host_id;
     this.#name = endpoint.name;

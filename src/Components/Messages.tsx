@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import humanizeDuration from "humanize-duration";
-import { Stack, Table, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Stack, Table, OverlayTrigger, Tooltip, Spinner } from "react-bootstrap";
 import { FaSearch } from "react-icons/fa";
 import ServiceControl from "../Utils/ServiceControl";
 import { MdOutlineCancel } from "react-icons/md";
@@ -21,6 +20,7 @@ import MessageStatus_RetryIssued_Warn from '../assets/MessageStatus_RetryIssued_
 import MessageStatus_RetryIssued from '../assets/MessageStatus_RetryIssued.svg';
 import MessageStatus_Successful_Warn from '../assets/MessageStatus_Successful_Warn.svg';
 import MessageStatus_Successful from '../assets/MessageStatus_Successful.svg';
+import TypeHumanizer from "../Utils/TypeHumanizer";
 
 // Create a mapping of status to icons
 const statusIcons: { [key: string]: string } = {
@@ -43,15 +43,21 @@ interface MessagesProps {
     endpoint: Endpoint | undefined;
     setMessages: (messages: Message[]) => void;
     messages: Message[];
-    setMessage: (message: Message) => void;
+    setMessage: (message: Message | undefined) => void;
 }
 
 const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, messages, setMessage }) => {
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [totalCount, setTotalCount] = useState<number>(-1);
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
+    const [selectedMessageId, setSelectedMessageId] = useState<string | undefined>(undefined);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const messagesPerPage = 10;
+
+    useEffect(() => {
+        setMessage(undefined);
+        setSelectedMessageId(undefined);
+    }, [messages, setMessage]);
 
     useEffect(() => {
         if (!connection) {
@@ -61,14 +67,15 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
             return;
         }
         fetchMessages();
-    }, [connection, endpoint, currentPage, searchTerm]); // Add searchTerm as a dependency
+    }, [connection, endpoint, currentPage, searchTerm]);
 
     const fetchMessages = async () => {
         try {
+            setIsLoading(true);
             const serviceControl = new ServiceControl(connection);
             const data = await serviceControl.getAuditMessages(
-                endpoint?.name, 
-                currentPage - 1, // Adjust for 0-based paging
+                endpoint?.endpoint_details?.name, 
+                currentPage - 1, 
                 searchTerm || undefined, 
                 "time_sent", 
                 false, 
@@ -80,34 +87,29 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
             console.error('Error fetching messages:', error);
             setMessages([]);
             setTotalCount(0);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     const executeSearch = () => {
-        setCurrentPage(1); // Reset to first page when searching
-        // fetchMessages will be called by the useEffect due to searchTerm change
-    };
-
-    const formatProcessingTime = (time: string) => {
-        const date = new Date(`1970-01-01T${time}Z`);
-        const milliseconds = date.getTime();
-        return humanizeDuration(milliseconds, { units: ["h", "m", "s", "ms"], round: true });
+        setCurrentPage(1);
     };
 
     const totalPages = Math.ceil(totalCount / messagesPerPage);
 
     return (
         <>
-            <h3>Messages
-                {endpoint && ` (${endpoint.name})`}
+            <h3 id="messages-heading">Messages
+                {endpoint && ` (${endpoint.endpoint_details.name})`}
             </h3>
             {totalCount >= 0 &&
                 <div>
-                    <Stack direction="horizontal" gap={3} className="justify-content-end">
+                    <Stack direction="horizontal" gap={3} className="justify-content-end mb-3">
                         <div>
-                            <span>{totalCount} messages</span>
+                            <span aria-live="polite">{totalCount} messages</span>
                         </div>
-                        <div className="btn-group">
+                        <div className="btn-group" role="navigation" aria-label="Messages pagination">
                             <button
                                 onClick={() => setCurrentPage(1)}
                                 disabled={currentPage === 1}
@@ -119,6 +121,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
                                 className="btn btn-primary"
+                                aria-label="Previous page"
                             >
                                 Previous
                             </button>
@@ -129,6 +132,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
                                 className="btn btn-primary"
+                                aria-label="Next page"
                             >
                                 Next
                             </button>
@@ -153,6 +157,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                     }
                                 }}
                                 className="form-control"
+                                aria-label="Search messages"
                             />
                             <button className="btn btn-outline-secondary" type="button" onClick={executeSearch}>
                                 <FaSearch />
@@ -169,51 +174,59 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                             </button>
                         </div>
                     </Stack>
-                    <Table size="sm" hover>
-                        <thead>
-                            <tr>
-                                <th className="text-center">Status</th>
-                                <th>Message ID</th>
-                                <th>Message Type</th>
-                                <th>Time Sent</th>
-                                <th>Processing Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {messages.map((message, index) => {
-                                const messageStatusInfo = new MessageStatusInfo(message);
-                                return (
-                                <tr
-                                    key={index}
-                                    onClick={() => {
-                                        setMessage(message);
-                                        setSelectedMessageId(message.messageId);
-                                    }}
-                                    className={selectedMessageId === message.messageId ? "table-active" : ""}
-                                    style={{ cursor: "pointer" }}
-                                >
-                                    <td className="text-center">
-                                        <OverlayTrigger
-                                            placement="top"
-                                            overlay={<Tooltip>{messageStatusInfo.description}</Tooltip>}
-                                        >
-                                            <img 
-                                                src={statusIcons[messageStatusInfo.image]} 
-                                                alt={messageStatusInfo.description}
-                                                width="16"
-                                                height="16"
-                                            />
-                                        </OverlayTrigger>
-                                    </td>
-                                    <td>{message.messageId}</td>
-                                    <td>{message.messageType?.split('.').pop()}</td>
-                                    <td>{message.timeSent?.toLocaleString()}</td>
-                                    <td>{formatProcessingTime(message.processingTime)}</td>
+                    {isLoading ? (
+                        <div className="text-center p-5">
+                            <Spinner animation="border" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </Spinner>
+                        </div>
+                    ) : (
+                        <Table size="sm" hover role="table" aria-label="Messages table">
+                            <thead>
+                                <tr>
+                                    <th className="text-center">Status</th>
+                                    <th>Message ID</th>
+                                    <th>Message Type</th>
+                                    <th>Time Sent</th>
+                                    <th>Processing Time</th>
                                 </tr>
-                            );
-                            })}
-                        </tbody>
-                    </Table>
+                            </thead>
+                            <tbody>
+                                {messages.map((message, index) => {
+                                    const messageStatusInfo = new MessageStatusInfo(message);
+                                    return (
+                                    <tr
+                                        key={index}
+                                        onClick={() => {
+                                            setMessage(message);
+                                            setSelectedMessageId(message.messageId);
+                                        }}
+                                        className={selectedMessageId === message.messageId ? "table-active" : ""}
+                                        style={{ cursor: "pointer" }}
+                                    >
+                                        <td className="text-center">
+                                            <OverlayTrigger
+                                                placement="top"
+                                                overlay={<Tooltip>{messageStatusInfo.description}</Tooltip>}
+                                            >
+                                                <img 
+                                                    src={statusIcons[messageStatusInfo.image]} 
+                                                    alt={messageStatusInfo.description}
+                                                    width="16"
+                                                    height="16"
+                                                />
+                                            </OverlayTrigger>
+                                        </td>
+                                        <td>{message.messageId}</td>
+                                        <td>{message.messageType?.split('.').pop()}</td>
+                                        <td>{message.timeSent?.toLocaleString()}</td>
+                                        <td>{TypeHumanizer.formatProcessingTime(message.processingTime)}</td>
+                                    </tr>
+                                );
+                                })}
+                            </tbody>
+                        </Table>
+                    )}
                 </div>
             }
         </>

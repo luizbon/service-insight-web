@@ -4,9 +4,10 @@ import MessageBody from "./MessageBody";
 import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import Message from "../Models/Message";
+import MessageProperties from "./MessageProperties/MessageProperties";
 
 interface DetailsProps {
-    message: Message | null;
+    message: Message | undefined;
     connection: any;
 }
 
@@ -27,7 +28,7 @@ const Details: React.FC<DetailsProps> = ({ message, connection }) => {
             {/* <Tab eventKey="flowDiagram" title="Flow Diagram">
                 <ErrorBoundary fallbackRender={fallbackRender}>Flow Diagram</ErrorBoundary>
             </Tab>
-            <Tab eventKey="saga" title="Saga">
+            <Tab eventKey="saga" title="Saga" aria-label="Saga tab">
                 <ErrorBoundary fallbackRender={fallbackRender}>Saga</ErrorBoundary>
             </Tab> */}
             {/* <Tab eventKey="sequenceDiagram" title="Sequence Diagram">
@@ -35,6 +36,9 @@ const Details: React.FC<DetailsProps> = ({ message, connection }) => {
             </Tab> */}
             <Tab eventKey="body" title="Body">
                 <ErrorBoundary fallbackRender={fallbackRender}><MessageBody message={message} connection={connection} /></ErrorBoundary>
+            </Tab>
+            <Tab eventKey="properties" title="Properties">
+                <ErrorBoundary fallbackRender={fallbackRender}><MessageProperties message={message} /></ErrorBoundary>
             </Tab>
         </Tabs>        
     )

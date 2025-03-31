@@ -121,18 +121,25 @@ class ModelCreator {
     #createMessageTrees(messages: Message[]) {
         const nodes = messages.map(message => new MessageTreeNode(message));
         const resolved: MessageTreeNode[] = [];
-        const index = nodes.map(node => node.Id).reduce((acc, id, i) => acc.set(id, i), new Map<string, number>());
+        const nodeMap = new Map<string, MessageTreeNode>();
+        
+        // First, create a map of all nodes by their ID
+        for (const node of nodes) {
+            nodeMap.set(node.Id, node);
+        }
 
+        // Then establish parent-child relationships
         for (const node of nodes) {
             if (node.parent) {
-                const parent = index[node.parent];
-                if (parent) {
-                    parent.addChild(node);
+                const parentNode = nodeMap.get(node.parent);
+                if (parentNode) {
+                    parentNode.addChild(node);
                     resolved.push(node);
                 }
             }
         }
 
+        // Return only root nodes (nodes without parents or with unresolved parents)
         return nodes.filter(node => resolved.indexOf(node) === -1);
     }
 
@@ -173,7 +180,7 @@ class ModelCreator {
 
 class MessageTreeNode {
     #message: Message;
-    #parent: string | null;
+    #parent: string | undefined;
     #children: MessageTreeNode[] = [];
 
     constructor(message: Message) {
