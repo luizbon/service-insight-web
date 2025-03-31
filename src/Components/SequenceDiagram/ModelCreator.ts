@@ -31,7 +31,9 @@ class ModelCreator {
         const messagesInOrder = messageTrees.flatMap(tree => [...tree.walk()]);
 
         for (const message of messagesInOrder) {
-            endpointRegistry.push(this.#createSendingEndpoint(message));
+            if(message.sendingEndpoint) {
+                endpointRegistry.push(this.#createSendingEndpoint(message));
+            }
         }
 
         for (const message of messagesInOrder) {
@@ -39,7 +41,7 @@ class ModelCreator {
         }
 
         for (const message of messagesInOrder) {
-            const sendingEndpoint = endpointRegistry.find(endpoint => endpoint.host === message.sendingEndpoint.host)!;
+            const sendingEndpoint = endpointRegistry.find(endpoint => endpoint.host === message.sendingEndpoint?.host)!;
             if (this.#endpoitns.findIndex(endpoint => endpoint.host === sendingEndpoint.host) === -1) {
                 this.#endpoitns.push(sendingEndpoint);
             }
@@ -139,6 +141,9 @@ class ModelCreator {
     }
 
     #createSendingEndpoint(message: Message) {
+        if (!message.sendingEndpoint) {
+            throw new Error("Sending endpoint is undefined.");
+        }
         return new EndpointItem(message.sendingEndpoint.name, message.sendingEndpoint.host, message.sendingEndpoint.hostId, message.getHeaderByKey(MessageHeaderKeys.VERSION));
     }
 
