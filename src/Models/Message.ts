@@ -5,14 +5,16 @@ class Message {
   #message: any;
   #headers: any;
   #receivingEndpoint: Endpoint;
-  #sendingEndpoint: Endpoint;
+  #sendingEndpoint: Endpoint | undefined;
   #messageIntent: string | undefined;
 
   constructor(message: SdkMessage) {
     this.#message = message;
     this.#headers = message.headers;
     this.#receivingEndpoint = new Endpoint(message.receiving_endpoint);
-    this.#sendingEndpoint = new Endpoint(message.sending_endpoint);
+    if(message.sending_endpoint) {
+      this.#sendingEndpoint = new Endpoint(message.sending_endpoint);
+    }
   }
 
   get messageId() {
@@ -91,7 +93,7 @@ class Message {
 class Endpoint {
   #endpointDetails: EndpointDetails;
 
-  constructor(endpointDetails: any) {
+  constructor(endpointDetails: EndpointDetails) {
     this.#endpointDetails = new EndpointDetails(endpointDetails);
   }
 
