@@ -1,10 +1,13 @@
-interface Endpoint {
+interface EndpointDetails {
+    host: string;
+    host_id: string;
     name: string;
+}
+
+interface Endpoint {
     id: string;
-    is_sending_heartbeats: boolean;
-    monitor_heartbeat: boolean;
-    monitored: boolean;
     host_display_name: string;
+    endpoint_details: EndpointDetails;
 }
 
 export default Endpoint;

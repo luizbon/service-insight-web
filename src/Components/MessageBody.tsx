@@ -3,12 +3,12 @@ import ServiceControl from '../Utils/ServiceControl'; // Import the ServiceContr
 import Message from '../Models/Message';
 
 interface MessageBodyProps {
-  message: Message | null;
+  message: Message | undefined;
   connection: any;
 }
 
 const MessageBody: React.FC<MessageBodyProps> = ({ message, connection }) => {
-  const [bodyContent, setBodyContent] = useState<string | null>(null);
+  const [bodyContent, setBodyContent] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (message) {
@@ -17,7 +17,7 @@ const MessageBody: React.FC<MessageBodyProps> = ({ message, connection }) => {
         .then(data => setBodyContent(data))
         .catch(error => console.error('Error fetching body content:', error));
     } else {
-      setBodyContent(null);
+      setBodyContent(undefined);
     }
   }, [message]);
 

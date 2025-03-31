@@ -6,3 +6,5 @@ declare module '*.svg' {
   const src: string;
   export default src;
 }
+
+type KeyValuePair = { key: string; value: any };

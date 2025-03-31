@@ -31,7 +31,9 @@ class ModelCreator {
         const messagesInOrder = messageTrees.flatMap(tree => [...tree.walk()]);
 
         for (const message of messagesInOrder) {
-            endpointRegistry.push(this.#createSendingEndpoint(message));
+            if(message.sendingEndpoint) {
+                endpointRegistry.push(this.#createSendingEndpoint(message));
+            }
         }
 
         for (const message of messagesInOrder) {
@@ -39,7 +41,7 @@ class ModelCreator {
         }
 
         for (const message of messagesInOrder) {
-            const sendingEndpoint = endpointRegistry.find(endpoint => endpoint.host === message.sendingEndpoint.host)!;
+            const sendingEndpoint = endpointRegistry.find(endpoint => endpoint.host === message.sendingEndpoint?.host)!;
             if (this.#endpoitns.findIndex(endpoint => endpoint.host === sendingEndpoint.host) === -1) {
                 this.#endpoitns.push(sendingEndpoint);
             }
@@ -119,18 +121,25 @@ class ModelCreator {
     #createMessageTrees(messages: Message[]) {
         const nodes = messages.map(message => new MessageTreeNode(message));
         const resolved: MessageTreeNode[] = [];
-        const index = nodes.map(node => node.Id).reduce((acc, id, i) => acc.set(id, i), new Map<string, number>());
+        const nodeMap = new Map<string, MessageTreeNode>();
+        
+        // First, create a map of all nodes by their ID
+        for (const node of nodes) {
+            nodeMap.set(node.Id, node);
+        }
 
+        // Then establish parent-child relationships
         for (const node of nodes) {
             if (node.parent) {
-                const parent = index[node.parent];
-                if (parent) {
-                    parent.addChild(node);
+                const parentNode = nodeMap.get(node.parent);
+                if (parentNode) {
+                    parentNode.addChild(node);
                     resolved.push(node);
                 }
             }
         }
 
+        // Return only root nodes (nodes without parents or with unresolved parents)
         return nodes.filter(node => resolved.indexOf(node) === -1);
     }
 
@@ -139,6 +148,9 @@ class ModelCreator {
     }
 
     #createSendingEndpoint(message: Message) {
+        if (!message.sendingEndpoint) {
+            throw new Error("Sending endpoint is undefined.");
+        }
         return new EndpointItem(message.sendingEndpoint.name, message.sendingEndpoint.host, message.sendingEndpoint.hostId, message.getHeaderByKey(MessageHeaderKeys.VERSION));
     }
 
@@ -168,7 +180,7 @@ class ModelCreator {
 
 class MessageTreeNode {
     #message: Message;
-    #parent: string | null;
+    #parent: string | undefined;
     #children: MessageTreeNode[] = [];
 
     constructor(message: Message) {

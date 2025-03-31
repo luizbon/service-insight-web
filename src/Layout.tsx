@@ -19,14 +19,23 @@ const Layout: React.FC<LayoutProps> = ({ children, setEndpoint, connection, setC
   return (
     <>
       <Header setConnection={setConnection} connection={connection} />
-      <Container fluid as="main">
+      <Container fluid as="main" role="main" aria-label="Main content">
         {!isEndpointShown &&
-        <div className="vertical-floating-tab tab-left" onClick={() => setIsEndpointShown(!isEndpointShown)}>
+        <div className="vertical-floating-tab tab-left" 
+             onClick={() => setIsEndpointShown(!isEndpointShown)}
+             role="button"
+             tabIndex={0}
+             aria-label="Show endpoint explorer"
+             onKeyPress={(e) => {
+               if (e.key === 'Enter') {
+                 setIsEndpointShown(!isEndpointShown)
+               }
+             }}>
           <span>Endpoint Explorer</span>
         </div>
         }
         <Row>
-          <Col xs={isEndpointShown ? 3 : 0} className="no-overflow">
+          <Col xs={isEndpointShown ? 3 : 0} className="no-overflow" role="complementary" aria-label="Endpoint explorer">
             <PinOffcanvas show={isEndpointShown} placement="start" startPinned={true} onHide={() => setIsEndpointShown(false)}>
               <PinOffcanvas.Title>
                 <h2>Endpoint Explorer</h2>

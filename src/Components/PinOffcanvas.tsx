@@ -57,17 +57,31 @@ const PinOffcanvasTitle: React.FC<PinOffcanvasTitleProps> = ({ children }) => {
     return (
         <>
             {isPinned ? (
-                <div>
+                <div role="heading" aria-level={1}>
                     <Stack direction="horizontal" gap={3}>
                         {children}
-                        <FaThumbtackSlash onClick={togglePin} className="ms-auto" />
+                        <button
+                            onClick={togglePin}
+                            onKeyDown={(e) => e.key === 'Enter' && togglePin()}
+                            aria-label="Unpin panel"
+                            className="ms-auto btn btn-link p-0 border-0"
+                        >
+                            <FaThumbtackSlash />
+                        </button>
                     </Stack>
                 </div>
             ) : (
                 <Offcanvas.Header closeButton>
                     <Offcanvas.Title>
                         <Stack direction="horizontal" gap={3}>
-                            <FaThumbtack onClick={togglePin} />
+                            <button
+                                onClick={togglePin}
+                                onKeyDown={(e) => e.key === 'Enter' && togglePin()}
+                                aria-label="Pin panel"
+                                className="btn btn-link p-0 border-0"
+                            >
+                                <FaThumbtack />
+                            </button>
                             {children}
                         </Stack>
                     </Offcanvas.Title>
@@ -90,7 +104,9 @@ const PinOffcanvasBody: React.FC<PinOffcanvasBodyProps> = ({ children }) => {
     return (
         <>
             {isPinned ? (
-                <>{children}</>
+                <div role="region" aria-label="Pinned content">
+                    {children}
+                </div>
             ) : (
                 <Offcanvas.Body>
                     {children}

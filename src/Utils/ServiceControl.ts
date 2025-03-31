@@ -17,7 +17,7 @@ class ServiceControl {
     const { service_control } = connection;
     this.#baseUrl = service_control;
     this.#conversationEndpoint = "conversations/$0";
-    this.#defaultEndpointsEndpoint = "endpoints";
+    this.#defaultEndpointsEndpoint = "endpoints/known";
     this.#endpointMessagesEndpoint = "endpoints/$0/messages";
     this.#retryEndpoint = "errors/$0/retry";
     this.#messagesEndpoint = "messages";
@@ -26,19 +26,28 @@ class ServiceControl {
     this.#defaultPageSize = 10;
   }
 
-  async getEndpoints(monitoredOnly: boolean = true): Promise<Endpoint[]> {
+  async getEndpoints(): Promise<Endpoint[]> {
     const url = this.#concatPath(this.#defaultEndpointsEndpoint);
     const response = await fetch(url);
     const data = await response.json();
 
-    const groupedEndpoints = data.reduce((acc: { [key: string]: Endpoint[] }, endpoint: Endpoint) => {
-      if (monitoredOnly && !endpoint.monitored) {
-        return acc;
+    const sortedData = data.sort((a: Endpoint, b: Endpoint) => {
+      const nameA = a.endpoint_details.name.toLowerCase();
+      const nameB = b.endpoint_details.name.toLowerCase();
+      if (nameA < nameB) {
+        return -1;
       }
-      if (!acc[endpoint.name]) {
-        acc[endpoint.name] = [];
+      if (nameA > nameB) {
+        return 1;
       }
-      acc[endpoint.name].push(endpoint);
+      return 0;
+    });
+
+    const groupedEndpoints = sortedData.reduce((acc: { [key: string]: Endpoint[] }, endpoint: Endpoint) => {
+      if (!acc[endpoint.endpoint_details.name]) {
+        acc[endpoint.endpoint_details.name] = [];
+      }
+      acc[endpoint.endpoint_details.name].push(endpoint);
       return acc;
     }, {});
 
@@ -53,7 +62,7 @@ class ServiceControl {
     if (body.startsWith("<?xml")) {
       return body;
     }
-    return JSON.stringify(JSON.parse(body), null, 2);
+    return JSON.stringify(JSON.parse(body), undefined, 2);
   }
 
   async retryMessage(messageId: string, instanceId?: string) {
@@ -76,7 +85,7 @@ class ServiceControl {
     const response = await fetch(`${messagesUrl}?${parameters}`);
     const totalCount = Number(response.headers.get('total-count') ?? 0);
     const messages = (await response.json()) as SdkMessage[];
-
+      console.log(messages);
     return { totalCount, messages: messages.map((message: SdkMessage) => new Message(message)) };
   }
 
