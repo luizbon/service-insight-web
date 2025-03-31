@@ -1,6 +1,6 @@
 import { Tabs, Tab } from "react-bootstrap";
 import MessageBody from "./MessageBody";
-import SequenceDiagram from "./SequenceDiagram";
+// import SequenceDiagram from "./SequenceDiagram";
 import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import Message from "../Models/Message";
@@ -24,17 +24,17 @@ function fallbackRender({ error }: { error: Error, resetErrorBoundary: () => voi
 const Details: React.FC<DetailsProps> = ({ message, connection }) => {
     return (
         message && 
-        <Tabs className="mt-3" justify aria-label="Message details">
-            <Tab eventKey="flowDiagram" title="Flow Diagram" aria-label="Flow diagram tab">
+        <Tabs className="mt-3" justify>
+            {/* <Tab eventKey="flowDiagram" title="Flow Diagram">
                 <ErrorBoundary fallbackRender={fallbackRender}>Flow Diagram</ErrorBoundary>
             </Tab>
             <Tab eventKey="saga" title="Saga" aria-label="Saga tab">
                 <ErrorBoundary fallbackRender={fallbackRender}>Saga</ErrorBoundary>
-            </Tab>
-            <Tab eventKey="sequenceDiagram" title="Sequence Diagram" aria-label="Sequence diagram tab">
+            </Tab> */}
+            {/* <Tab eventKey="sequenceDiagram" title="Sequence Diagram">
                 <ErrorBoundary fallbackRender={fallbackRender}><SequenceDiagram connection={connection} message={message} /></ErrorBoundary>
-            </Tab>
-            <Tab eventKey="body" title="Body" aria-label="Message body tab">
+            </Tab> */}
+            <Tab eventKey="body" title="Body">
                 <ErrorBoundary fallbackRender={fallbackRender}><MessageBody message={message} connection={connection} /></ErrorBoundary>
             </Tab>
             <Tab eventKey="properties" title="Properties">

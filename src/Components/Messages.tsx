@@ -24,8 +24,8 @@ import TypeHumanizer from "../Utils/TypeHumanizer";
 
 // Create a mapping of status to icons
 const statusIcons: { [key: string]: string } = {
-    'MessageStatus_Archived_Warn': MessageStatus_Archived_Warn,
-    'MessageStatus_Archived': MessageStatus_Archived,
+    'MessageStatus_ArchivedFailure_Warn': MessageStatus_Archived_Warn,
+    'MessageStatus_ArchivedFailure': MessageStatus_Archived,
     'MessageStatus_Failed_Warn': MessageStatus_Failed_Warn,
     'MessageStatus_Failed': MessageStatus_Failed,
     'MessageStatus_RepeatedFailed_Warn': MessageStatus_RepeatedFailed_Warn,
@@ -57,23 +57,35 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
         if (!connection) {
             setTotalCount(-1);
             setMessages([]);
+            setCurrentPage(1);
             return;
         }
         fetchMessages();
-    }, [connection, endpoint, currentPage]);
+    }, [connection, endpoint, currentPage, searchTerm]); // Add searchTerm as a dependency
 
-    const fetchMessages = (q?: string) => {
-        const serviceControl = new ServiceControl(connection);
-        serviceControl.getAuditMessages(endpoint?.name, currentPage, q, "time_sent", false, messagesPerPage)
-            .then(data => {
-                setMessages(data.messages);
-                setTotalCount(data.totalCount);
-            })
-            .catch(error => console.error('Error fetching messages:', error));
+    const fetchMessages = async () => {
+        try {
+            const serviceControl = new ServiceControl(connection);
+            const data = await serviceControl.getAuditMessages(
+                endpoint?.name, 
+                currentPage - 1, // Adjust for 0-based paging
+                searchTerm || undefined, 
+                "time_sent", 
+                false, 
+                messagesPerPage
+            );
+            setMessages(data.messages);
+            setTotalCount(data.totalCount);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            setMessages([]);
+            setTotalCount(0);
+        }
     };
 
     const executeSearch = () => {
-        return fetchMessages(searchTerm);
+        setCurrentPage(1); // Reset to first page when searching
+        // fetchMessages will be called by the useEffect due to searchTerm change
     };
 
     const totalPages = Math.ceil(totalCount / messagesPerPage);
@@ -89,7 +101,14 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                         <div>
                             <span aria-live="polite">{totalCount} messages</span>
                         </div>
-                        <div className="pagination-controls" role="navigation" aria-label="Messages pagination">
+                        <div className="btn-group" role="navigation" aria-label="Messages pagination">
+                            <button
+                                onClick={() => setCurrentPage(1)}
+                                disabled={currentPage === 1}
+                                className="btn btn-primary"
+                            >
+                                First
+                            </button>
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
@@ -98,7 +117,9 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                             >
                                 Previous
                             </button>
-                            <span className="mx-2" aria-current="page">Page {currentPage} of {totalPages}</span>
+                            <button className="btn btn-secondary" disabled>
+                                Page {currentPage} of {totalPages}
+                            </button>
                             <button
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
@@ -106,6 +127,13 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                 aria-label="Next page"
                             >
                                 Next
+                            </button>
+                            <button
+                                onClick={() => setCurrentPage(totalPages)}
+                                disabled={currentPage === totalPages}
+                                className="btn btn-primary"
+                            >
+                                Last
                             </button>
                         </div>
 
@@ -123,7 +151,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                 className="form-control"
                                 aria-label="Search messages"
                             />
-                            <button className="btn btn-outline-secondary" type="button" onClick={() => executeSearch()}>
+                            <button className="btn btn-outline-secondary" type="button" onClick={executeSearch}>
                                 <FaSearch />
                             </button>
                             <button
@@ -131,8 +159,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
                                 type="button"
                                 onClick={() => {
                                     setSearchTerm("");
-                                    setCurrentPage(1); // Reset to the first page
-                                    fetchMessages(); // Directly call fetchMessages to ensure search is executed
+                                    setCurrentPage(1);
                                 }}
                             >
                                 <MdOutlineCancel />

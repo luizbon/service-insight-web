@@ -95,10 +95,15 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
             {connection &&
                 <RichTreeView 
                     items={nodes} 
-                    onItemClick={(_event, itemId) => setActiveId(itemId)} 
+                    onItemClick={(_event, itemId) => {
+                        setActiveId(itemId);
+                        if (itemId === connection.service_control) {
+                            setEndpoint(undefined);
+                        }
+                    }} 
                     expansionTrigger="iconContainer"
                     defaultExpandedItems={[connection.service_control]} 
-                    itemChildrenIndentation={5}
+                    itemChildrenIndentation={5} 
                     aria-label="Endpoint navigation tree"
                     role="tree"
                 />
