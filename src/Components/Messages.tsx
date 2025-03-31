@@ -24,8 +24,8 @@ import MessageStatus_Successful from '../assets/MessageStatus_Successful.svg';
 
 // Create a mapping of status to icons
 const statusIcons: { [key: string]: string } = {
-    'MessageStatus_Archived_Warn': MessageStatus_Archived_Warn,
-    'MessageStatus_Archived': MessageStatus_Archived,
+    'MessageStatus_ArchivedFailure_Warn': MessageStatus_Archived_Warn,
+    'MessageStatus_ArchivedFailure': MessageStatus_Archived,
     'MessageStatus_Failed_Warn': MessageStatus_Failed_Warn,
     'MessageStatus_Failed': MessageStatus_Failed,
     'MessageStatus_RepeatedFailed_Warn': MessageStatus_RepeatedFailed_Warn,
