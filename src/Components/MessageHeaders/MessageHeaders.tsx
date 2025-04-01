@@ -14,7 +14,7 @@ const MessageHeaders: React.FC<DetailsProps> = ({ message }) => {
             </tr>
         </thead>
         <tbody>
-            {message.headers.getAllKeys().map((key, index) => (
+            {message.headers.getAllKeys().map((key: string, index: number) => (
                 <tr key={index}>
                     <td>{key}</td>
                     <td>{message.headers.getValue(key)}</td>

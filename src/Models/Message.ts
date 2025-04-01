@@ -106,7 +106,7 @@ class Message {
     }
   }
 
-  get headers(): DynamicPropertyResolver {
+  get headers(): any {
     return this.#typedHeaders;
   }
 
