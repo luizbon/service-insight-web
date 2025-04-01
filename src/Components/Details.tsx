@@ -5,6 +5,7 @@ import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import Message from "../Models/Message";
 import MessageProperties from "./MessageProperties/MessageProperties";
+import MessageHeaders from "./MessageHeaders/MessageHeaders";
 
 interface DetailsProps {
     message: Message | undefined;
@@ -36,6 +37,9 @@ const Details: React.FC<DetailsProps> = ({ message, connection }) => {
             </Tab> */}
             <Tab eventKey="body" title="Body">
                 <ErrorBoundary fallbackRender={fallbackRender}><MessageBody message={message} connection={connection} /></ErrorBoundary>
+            </Tab>
+            <Tab eventKey={"headers"} title="Headers">
+                <ErrorBoundary fallbackRender={fallbackRender}><MessageHeaders message={message} /></ErrorBoundary>
             </Tab>
             <Tab eventKey="properties" title="Properties">
                 <ErrorBoundary fallbackRender={fallbackRender}><MessageProperties message={message} /></ErrorBoundary>
