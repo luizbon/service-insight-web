@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { RichTreeView } from '@mui/x-tree-view';
 import ServiceControl from '../Utils/ServiceControl'; // Import ServiceControl from Utils folder
 import Endpoint from '../Sdk/Endpoint';
+import { ConnectionData } from '../types/ConnectionTypes';
 
 interface EndpointsProps {
-    connection: { service_control: string } | undefined;
+    connection: ConnectionData | undefined;
     setEndpoint: (endpoint: Endpoint | undefined) => void;
 }
 
@@ -15,7 +16,7 @@ interface TreeNode {
 }
 
 const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
-    const [endpoints, setEndpoints] = useState<any>({});
+    const [endpoints, setEndpoints] = useState<Record<string, Endpoint[]>>({});
     const [activeId, setActiveId] = useState<string | undefined>(undefined);
     const [nodes, setNodes] = useState<TreeNode[]>([]);
 
@@ -23,7 +24,18 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
         if (connection) {
             const service_control = new ServiceControl(connection);
             service_control.getEndpoints()
-                .then(data => setEndpoints(data))
+                .then(data => {
+                    // Group endpoints by name
+                    const groupedEndpoints: Record<string, Endpoint[]> = {};
+                    data.forEach((endpoint: Endpoint) => {
+                        const name = endpoint.endpoint_details.name;
+                        if (!groupedEndpoints[name]) {
+                            groupedEndpoints[name] = [];
+                        }
+                        groupedEndpoints[name].push(endpoint);
+                    });
+                    setEndpoints(groupedEndpoints);
+                })
                 .catch(error => console.error('Error fetching endpoints:', error));
         }
     }, [connection]);
@@ -46,7 +58,7 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
                 }
             }
         }
-    }, [activeId, connection]);
+    }, [activeId, connection, endpoints, setEndpoint]);
 
     useEffect(() => {
         if (!connection){
@@ -69,7 +81,7 @@ const Endpoints: React.FC<EndpointsProps> = ({ connection, setEndpoint }) => {
                     label: endpointGroup[0].endpoint_details.name, 
                     children: [] 
                 };
-                endpointGroup.forEach((endpoint: any) => {
+                endpointGroup.forEach((endpoint: Endpoint) => {
                     endpointNode.children.push({ 
                         id: endpoint.id, 
                         label: endpoint.host_display_name, 

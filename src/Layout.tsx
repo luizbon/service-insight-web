@@ -6,11 +6,13 @@ import Endpoints from './Components/Endpoints';
 import PinOffcanvas from './Components/PinOffcanvas';
 import Endpoint from './Sdk/Endpoint';
 
+import { ConnectionData } from './types/ConnectionTypes';
+
 interface LayoutProps {
   children: ReactNode;
   setEndpoint: (endpoint: Endpoint | undefined) => void;
-  connection: any;
-  setConnection: (connection: any) => void;
+  connection: ConnectionData | undefined;
+  setConnection: (connection: ConnectionData | undefined) => void;
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, setEndpoint, connection, setConnection }) => {
