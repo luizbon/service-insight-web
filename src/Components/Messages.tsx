@@ -75,7 +75,7 @@ const Messages: React.FC<MessagesProps> = ({ connection, endpoint, setMessages, 
             const serviceControl = new ServiceControl(connection);
             const data = await serviceControl.getAuditMessages(
                 endpoint?.endpoint_details?.name, 
-                currentPage - 1, 
+                currentPage, 
                 searchTerm || undefined, 
                 "time_sent", 
                 false, 

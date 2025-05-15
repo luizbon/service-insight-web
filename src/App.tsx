@@ -14,12 +14,12 @@ function App() {
   const [message, setMessage] = useState<Message | undefined>(undefined);
 
   return (
-    <Layout setEndpoint={setEndpoint} setConnection={setConnection} connection={connection}>
-      <Stack gap={3}>
-        <Messages connection={connection} endpoint={endpoint} setMessages={setMessages} messages={messages} setMessage={setMessage} />
-        <Details message={message} connection={connection} />
-      </Stack>
-    </Layout>
+      <Layout setEndpoint={setEndpoint} setConnection={setConnection} connection={connection}>
+        <Stack gap={3}>
+          <Messages connection={connection} endpoint={endpoint} setMessages={setMessages} messages={messages} setMessage={setMessage} />
+          <Details message={message} connection={connection} />
+        </Stack>
+      </Layout>
   );
 }
 

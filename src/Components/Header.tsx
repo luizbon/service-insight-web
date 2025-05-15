@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Navbar, Nav, Container, Form, FormControl, Button, InputGroup, Overlay, Tooltip } from 'react-bootstrap';
 import { PiPlugsConnectedFill, PiPlugsFill } from "react-icons/pi";
 import logo from '../assets/react.svg';
+import { FaGithub } from "react-icons/fa";
 
 interface HeaderProps {
   setConnection: (connection: { service_control: string, response: any } | undefined) => void;
@@ -50,8 +51,8 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
           <img src={logo} className="App-logo d-inline-block align-top mr-2" alt="Service Insight logo" />
           Service Insight
         </Navbar.Brand>
-        <Nav className="ml-auto">
-          <Form className="d-inline" onSubmit={handleSubmit} aria-label="Service Control connection form">
+        <Nav className="ml-auto flex-grow-1 mx-4">
+          <Form className="d-inline w-100" onSubmit={handleSubmit} aria-label="Service Control connection form">
             <InputGroup>
               <FormControl
                 ref={search}
@@ -64,12 +65,14 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
                 isInvalid={!!error}
                 aria-label="Service Control URL"
                 aria-describedby={error ? "url-error" : undefined}
+                style={{ minWidth: "300px" }}
               />
               <Button 
                 variant="outline-light" 
                 type="submit" 
                 hidden={!!connection}
                 aria-label="Connect to Service Control"
+                className="rounded-end"
               >
                 <PiPlugsFill />
               </Button>
@@ -78,11 +81,17 @@ const Header: React.FC<HeaderProps> = ({ setConnection, connection }) => {
                 onClick={handleDisconnect} 
                 hidden={!connection}
                 aria-label="Disconnect from Service Control"
+                className="rounded-end"
               >
                 <PiPlugsConnectedFill />
               </Button>
             </InputGroup>
           </Form>
+        </Nav>
+        <Nav className="me-auto">
+          <Nav.Link href="https://github.com/luizbon/service-insight-web" target="_blank" rel="noopener noreferrer" className="d-flex align-items-center">
+            <FaGithub className="me-1" />
+          </Nav.Link>
         </Nav>
         <Overlay target={search.current || null} show={!!error} placement="left">
           {(props) => (
